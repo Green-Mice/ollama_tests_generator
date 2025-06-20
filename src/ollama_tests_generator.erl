@@ -39,7 +39,7 @@ generate_tests(SourceCode, Config) ->
 
     %% Build the prompt using the template from config or default
     PromptTemplate = maps:get(prompt_template, Config, default_prompt_template()),
-    Prompt = format_prompt(PromptTemplate, [Language, SourceCodeStr]),
+    Prompt = format_prompt(PromptTemplate, [Language, Language, SourceCodeStr]),
 
     %% Call the handler and return its result directly
     ollama_handler:generate(Prompt, Config).
