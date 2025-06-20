@@ -1,5 +1,7 @@
 # Ollama Tests Generator
 
+[![Hex.pm](https://img.shields.io/hexpm/v/discord_bot_light.svg)](https://hex.pm/packages/ollama_tests_generator)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-blue.svg)](https://hexdocs.pm/ollama_tests_generator)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Erlang/OTP](https://img.shields.io/badge/Erlang-OTP%2024+-red.svg)](https://www.erlang.org/)
 [![AI Powered](https://img.shields.io/badge/AI-Powered-green.svg)](https://ollama.ai/)
