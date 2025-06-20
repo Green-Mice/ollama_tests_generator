@@ -1,5 +1,5 @@
 -module(ollama_tests_generator).
--author("Green Mices").
+-author("Green Mice").
 
 %% Public API
 -export([

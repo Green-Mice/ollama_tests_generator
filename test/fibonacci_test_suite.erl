@@ -4,7 +4,7 @@
 %%% @end
 %%%-------------------------------------------------------------------
 -module(fibonacci_test_suite).
--author("Green Mices").
+-author("Green Mice").
 
 -export([
     run_fibonacci_test/0,
