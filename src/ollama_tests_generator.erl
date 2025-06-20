@@ -33,14 +33,14 @@ generate_tests(SourceCode, Config) ->
         Code when is_binary(Code) -> binary_to_list(Code);
         Code when is_list(Code) -> Code
     end,
-    
+
     %% Detect the programming language from the source code
     Language = detect_language(SourceCodeStr),
-    
+
     %% Build the prompt using the template from config or default
     PromptTemplate = maps:get(prompt_template, Config, default_prompt_template()),
-    Prompt = ollama_handler:format_prompt(PromptTemplate, [Language, SourceCodeStr]),
-    
+    Prompt = format_prompt(PromptTemplate, [Language, SourceCodeStr]),
+
     %% Call the handler and return its result directly
     ollama_handler:generate(Prompt, Config).
 
@@ -59,7 +59,7 @@ generate_tests_from_file(FilePath, Config) ->
         Path when is_binary(Path) -> binary_to_list(Path);
         Path when is_list(Path) -> Path
     end,
-    
+
     %% Read the file content
     case file:read_file(FilePathStr) of
         {ok, FileContent} ->
@@ -102,6 +102,15 @@ default_prompt_template() ->
     "Include tests for all public functions, edge cases, error conditions, and typical use cases. "
     "Follow the testing conventions and best practices for ~s. "
     "Only return the test code, no explanations:\n\n~s".
+
+%% @doc
+%% Format the prompt using io_lib:format.
+-spec format_prompt(string(), list(term())) -> string().
+format_prompt(PromptTemplate, Args) ->
+    case catch io_lib:format(PromptTemplate, Args) of
+        FormattedPrompt when is_list(FormattedPrompt) -> lists:flatten(FormattedPrompt);
+        _ -> "Failed to format prompt"
+    end.
 
 %% @doc
 %% Detect the programming language from source code content.
@@ -148,14 +157,14 @@ detect_by_patterns(SourceCode) ->
 -spec detect_by_keywords(string()) -> string().
 detect_by_keywords(SourceCode) ->
     LowerCase = string:to_lower(SourceCode),
-    
+
     %% Count occurrences of language-specific keywords
     ErlangScore = count_keywords(LowerCase, ["spawn", "receive", "gen_server", "supervisor", "application"]),
     ElixirScore = count_keywords(LowerCase, ["defp", "alias", "use", "import", "require"]),
     PythonScore = count_keywords(LowerCase, ["def", "__init__", "self", "import", "from"]),
     JavaScore = count_keywords(LowerCase, ["public", "private", "static", "void", "import"]),
     JSScore = count_keywords(LowerCase, ["var", "const", "let", "function", "require"]),
-    
+
     %% Return the language with the highest score
     Scores = [
         {ErlangScore, "Erlang"},
@@ -164,10 +173,10 @@ detect_by_keywords(SourceCode) ->
         {JavaScore, "Java"},
         {JSScore, "JavaScript"}
     ],
-    
+
     case lists:keysort(1, Scores) of
         [{0, _} | _] -> "Unknown";
-        SortedScores -> 
+        SortedScores ->
             {_, Language} = lists:last(SortedScores),
             Language
     end.
@@ -176,6 +185,5 @@ detect_by_keywords(SourceCode) ->
 %% Count occurrences of keywords in text.
 -spec count_keywords(string(), [string()]) -> integer().
 count_keywords(Text, Keywords) ->
-    lists:sum([
-        length(string:find(Text, Keyword, all)) || Keyword <- Keywords
-    ]).
+    lists:sum([length(string:tokens(Text, Keyword)) - 1 || Keyword <- Keywords]).
+
